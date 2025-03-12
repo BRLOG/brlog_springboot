@@ -1,0 +1,66 @@
+server:
+  port: 8090
+
+spring:
+  data:
+    redis:
+      host: localhost #172.17.0.2 #host.docker.internal #localhost # 또는 도커 컨테이너의 IP 주소
+      port: 6379
+  datasource:
+    url: jdbc:mysql://brmysql.ctuw4i0m8zm5.ap-northeast-2.rds.amazonaws.com:33066
+    username: admin
+    password: 'brjg123$#'
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  
+  # OAuth2 설정
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 664907543384-j5umt8gdn7c1hva42lobr1ve1lfi1be6.apps.googleusercontent.com
+            client-secret: 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
+            scope: email,profile
+            redirect-uri: "{baseUrl}/oauth2/callback/{registrationId}"
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: brbrbr0305@gmail.com  
+    password: msauzagiyobhvljp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true          
+
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+# JWT 설정
+jwt:
+  secret: zaSO02h44LV/fZ7/OvdLXjKYOmdkEt3g0C3sQJdL0qxJHo7UyWOCNtlRy+UBfmDCNw7JyuMoB8j+WxA9g80FLA==
+  expiration: 86400000  # 24시간 (밀리초)
+  header: Authorization
+  prefix: Bearer 
+
+# OAuth2 리다이렉션 URI
+oauth2:
+  authorizedRedirectUri: http://localhost:5173/oauth2/redirect
+
+# CORS 설정
+cors:
+  allowed-origins: http://localhost:5173
+  allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+  allowed-headers: Authorization,Content-Type,X-Requested-With,Accept,Origin
+  exposed-headers: Authorization
+      
+logging:
+  level:
+    org.mybatis: DEBUG
+    com.br.brlog: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+    io.jsonwebtoken: DEBUG

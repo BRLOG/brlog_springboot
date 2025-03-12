@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="post">
+
+    <!-- 게시글 목록 조회 -->
+    <select id="getPosts" resultType="com.br.brlog.post.dto.PostDTO">
+        SELECT 
+            post.POST_ID AS postId,
+            post.CATEGORY_ID AS categoryId,
+            post.USER_ID AS userId,
+            post.TITLE AS title,
+            post.CONTENT AS content,
+            post.VIEW_CNT AS viewCnt,
+            post.LIKE_CNT AS likeCnt,
+            post.COMMENT_CNT AS commentCnt,
+            post.IS_NOTICE AS isNotice,
+            post.STATUS AS status,
+            post.REG_DT AS regDt,
+            post.MOD_DT AS modDt,
+            
+            user.USER_NM AS userNm,
+            user.PROFILE_IMG_URL AS profileImgUrl
+        FROM brlog.D_POST post
+        	LEFT OUTER JOIN brlog.D_USER user
+        	ON post.USER_ID = user.USER_ID
+        WHERE 
+            post.STATUS = 'A'
+            <if test="categoryId != null and categoryId != ''">
+                AND post.CATEGORY_ID = #{categoryId}
+            </if>
+        <choose>
+	        <when test="sortBy == 'likes'">
+	            ORDER BY post.IS_NOTICE DESC, post.LIKE_CNT DESC
+	        </when>
+	        <when test="sortBy == 'comments'">
+	            ORDER BY post.IS_NOTICE DESC, post.COMMENT_CNT DESC
+	        </when>
+	        <otherwise>
+	            ORDER BY post.IS_NOTICE DESC, post.REG_DT DESC
+	        </otherwise>
+	    </choose>
+        LIMIT #{offset}, #{size}
+    </select>
+    
+    <!-- 게시글 상세 조회 -->
+    <select id="getPost" resultType="com.br.brlog.post.dto.PostDTO">
+        SELECT 
+            POST_ID AS postId,
+            CATEGORY_ID AS categoryId,
+            USER_ID AS userId,
+            TITLE AS title,
+            CONTENT AS content,
+            VIEW_CNT AS viewCnt,
+            LIKE_CNT AS likeCnt,
+            COMMENT_CNT AS commentCnt,
+            IS_NOTICE AS isNotice,
+            STATUS AS status,
+            REG_DT AS regDt,
+            MOD_DT AS modDt
+        FROM brlog.D_POST
+        WHERE 
+            POST_ID = #{postId}
+            AND STATUS = 'A'
+    </select>
+    
+    <!-- 게시글 저장 -->
+    <insert id="savePost" useGeneratedKeys="true" keyProperty="postId">
+        INSERT INTO brlog.D_POST (
+            CATEGORY_ID,
+            USER_ID,
+            TITLE,
+            CONTENT,
+            VIEW_CNT,
+            LIKE_CNT,
+            COMMENT_CNT,
+            IS_NOTICE,
+            STATUS
+        ) VALUES (
+            #{categoryId},
+            #{userId},
+            #{title},
+            #{content},
+            0,
+            0,
+            0,
+            #{isNotice},
+            'A'
+        )
+    </insert>
+    
+    <!-- 게시글 수정 -->
+    <update id="updatePost">
+        UPDATE brlog.D_POST
+        SET 
+            CATEGORY_ID = #{categoryId},
+            TITLE = #{title},
+            CONTENT = #{content},
+            MOD_DT = CURRENT_TIMESTAMP
+        WHERE 
+            POST_ID = #{postId}
+    </update>
+    
+    <!-- 게시글 삭제 (상태 변경) -->
+    <update id="deletePost">
+        UPDATE brlog.D_POST
+        SET 
+            STATUS = 'D',
+            MOD_DT = CURRENT_TIMESTAMP
+        WHERE 
+            POST_ID = #{postId}
+    </update>
+    
+    <!-- 게시글 조회수 증가 -->
+    <update id="incrementViewCount">
+        UPDATE brlog.D_POST
+        SET 
+            VIEW_CNT = VIEW_CNT + 1,
+            MOD_DT = CURRENT_TIMESTAMP
+        WHERE 
+            POST_ID = #{postId}
+    </update>
+    
+    <!-- 게시글 좋아요 수 증가 -->
+    <update id="incrementLikeCount">
+        UPDATE brlog.D_POST
+        SET 
+            LIKE_CNT = LIKE_CNT + 1,
+            MOD_DT = CURRENT_TIMESTAMP
+        WHERE 
+            POST_ID = #{postId}
+    </update>
+    
+    <!-- 게시글 좋아요 수 감소 -->
+    <update id="decrementLikeCount">
+        UPDATE brlog.D_POST
+        SET 
+            LIKE_CNT = GREATEST(LIKE_CNT - 1, 0),
+            MOD_DT = CURRENT_TIMESTAMP
+        WHERE 
+            POST_ID = #{postId}
+    </update>
+    
+    <!-- 게시글 댓글 수 증가 -->
+    <update id="incrementCommentCount">
+        UPDATE brlog.D_POST
+        SET 
+            COMMENT_CNT = COMMENT_CNT + 1,
+            MOD_DT = CURRENT_TIMESTAMP
+        WHERE 
+            POST_ID = #{postId}
+    </update>
+    
+    <!-- 게시글 좋아요 추가 -->
+    <insert id="addLike">
+        INSERT INTO brlog.D_LIKE (
+            POST_ID,
+            USER_ID
+        ) VALUES (
+            #{postId},
+            #{userId}
+        )
+    </insert>
+    
+    <!-- 게시글 좋아요 삭제 -->
+    <delete id="removeLike">
+        DELETE FROM brlog.D_LIKE
+        WHERE 
+            POST_ID = #{postId}
+            AND USER_ID = #{userId}
+    </delete>
+    
+    <!-- 게시글 좋아요 여부 확인 -->
+    <select id="checkLike" resultType="boolean">
+        SELECT 
+            CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END
+        FROM brlog.D_LIKE
+        WHERE 
+            POST_ID = #{postId}
+            AND USER_ID = #{userId}
+    </select>
+    
+    <!-- 댓글 목록 조회 -->
+    <select id="getComments" resultType="com.br.brlog.post.dto.CommentDTO">
+        SELECT 
+            COMMENT_ID AS commentId,
+            POST_ID AS postId,
+            USER_ID AS userId,
+            PARENT_ID AS parentId,
+            CONTENT AS content,
+            STATUS AS status,
+            REG_DT AS regDt,
+            MOD_DT AS modDt
+        FROM brlog.D_COMMENT
+        WHERE 
+            POST_ID = #{postId}
+            AND STATUS = 'A'
+        ORDER BY 
+            CASE WHEN PARENT_ID IS NULL THEN COMMENT_ID ELSE PARENT_ID END,
+            CASE WHEN PARENT_ID IS NULL THEN 0 ELSE 1 END,
+            REG_DT
+    </select>
+    
+    <!-- 댓글 목록 페이징 조회 -->
+    <select id="getCommentsWithPagination" resultType="com.br.brlog.post.dto.CommentDTO">
+        SELECT 
+            COMMENT_ID AS commentId,
+            POST_ID AS postId,
+            USER_ID AS userId,
+            PARENT_ID AS parentId,
+            CONTENT AS content,
+            STATUS AS status,
+            REG_DT AS regDt,
+            MOD_DT AS modDt
+        FROM brlog.D_COMMENT
+        WHERE 
+            POST_ID = #{postId}
+            AND STATUS = 'A'
+        ORDER BY 
+            CASE WHEN PARENT_ID IS NULL THEN COMMENT_ID ELSE PARENT_ID END,
+            CASE WHEN PARENT_ID IS NULL THEN 0 ELSE 1 END,
+            REG_DT
+        LIMIT #{offset}, #{size}
+    </select>
+    
+    <!-- 댓글 저장 -->
+    <insert id="saveComment" useGeneratedKeys="true" keyProperty="commentId">
+        INSERT INTO brlog.D_COMMENT (
+            POST_ID,
+            USER_ID,
+            PARENT_ID,
+            CONTENT,
+            STATUS
+        ) VALUES (
+            #{postId},
+            #{userId},
+            #{parentId},
+            #{content},
+            'A'
+        )
+    </insert>
+    
+    <!-- 댓글 조회 -->
+    <select id="getComment" resultType="com.br.brlog.post.dto.CommentDTO">
+        SELECT 
+            COMMENT_ID AS commentId,
+            POST_ID AS postId,
+            USER_ID AS userId,
+            PARENT_ID AS parentId,
+            CONTENT AS content,
+            STATUS AS status,
+            REG_DT AS regDt,
+            MOD_DT AS modDt
+        FROM brlog.D_COMMENT
+        WHERE 
+            COMMENT_ID = #{commentId}
+    </select>
+    
+    <!-- 카테고리 목록 조회 -->
+    <select id="getCategories" resultType="com.br.brlog.post.dto.CategoryDTO">
+        SELECT 
+            CATEGORY_ID AS id,
+            CATEGORY_NM AS name,
+            DESCRIPTION AS description,
+            ICON AS icon,
+            COLOR AS color,
+            SORT_ORDER AS sortOrder
+        FROM brlog.D_CATEGORY
+        ORDER BY 
+            SORT_ORDER
+    </select>
+    
+    <!-- 기여자 목록 조회 -->
+    <select id="getContributors" resultType="com.br.brlog.post.dto.ContributorDTO">
+        SELECT 
+            u.USER_ID AS id,
+            u.USER_NM AS name,
+            u.PROFILE_IMG_URL AS avatar,
+            COUNT(p.POST_ID) AS contributions
+        FROM brlog.D_USER u
+        LEFT JOIN brlog.D_POST p ON u.USER_ID = p.USER_ID AND p.STATUS = 'A'
+        GROUP BY 
+            u.USER_ID, u.USER_NM, u.PROFILE_IMG_URL
+        HAVING 
+            COUNT(p.POST_ID) > 0
+        ORDER BY 
+            COUNT(p.POST_ID) DESC
+        LIMIT 5
+    </select>
+    
+    <!-- 게시글 검색 -->
+    <select id="searchPosts" resultType="com.br.brlog.post.dto.PostDTO">
+        SELECT 
+            POST_ID AS postId,
+            CATEGORY_ID AS categoryId,
+            USER_ID AS userId,
+            TITLE AS title,
+            VIEW_CNT AS viewCnt,
+            LIKE_CNT AS likeCnt,
+            COMMENT_CNT AS commentCnt,
+            IS_NOTICE AS isNotice,
+            STATUS AS status,
+            REG_DT AS regDt,
+            MOD_DT AS modDt
+        FROM brlog.D_POST
+        WHERE 
+            STATUS = 'A'
+            AND (
+                TITLE LIKE CONCAT('%', #{keyword}, '%')
+                OR CONTENT LIKE CONCAT('%', #{keyword}, '%')
+            )
+        ORDER BY 
+            IS_NOTICE DESC, REG_DT DESC
+        LIMIT #{offset}, #{size}
+    </select>
+    
+    <!-- 작성자 정보 조회 -->
+    <select id="getAuthor" resultType="com.br.brlog.user.dto.UserDTO">
+        SELECT 
+            USER_ID AS userId,
+            USER_NM AS userNm,
+            PROFILE_IMG_URL AS profileImgUrl
+        FROM brlog.D_USER
+        WHERE 
+            USER_ID = #{userId}
+    </select>
+    
+</mapper>

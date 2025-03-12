@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="user">
+	
+	<select id="selectUserList" parameterType="com.br.brlog.user.dto.UserDTO" resultType="com.br.brlog.user.dto.UserDTO">
+		SELECT
+			USER_ID	AS userId
+			, USER_PW AS userPw	
+			, USER_NM AS userNm
+		FROM brlog.D_USER
+		WHERE 1=1
+	</select>
+	
+	<select id="findByUserId" parameterType="String" resultType="com.br.brlog.user.dto.UserDTO">
+		SELECT
+			USER_ID AS userId
+			, USER_NM AS userNm
+			, USER_PW As userPw
+			, PROFILE_IMG_URL AS profileImgUrl
+			, BIO AS bio
+			, PROVIDER AS provider
+			, PROVIDER_ID AS providerId
+			, USER_LEVEL AS userLevel
+			, ENABLED_YN AS enabledYn
+			, VERIFIED_YN AS verifiedYn
+			, REG_DT as regDt
+			, MOD_DT AS modDt
+			, LAST_LOGIN_DT AS lastLoginDt
+			, LAST_LOGIN_IP AS lastLoginIp
+		FROM brlog.D_USER
+		WHERE 1=1
+			AND USER_ID = #{userId}
+	</select>
+	
+	<insert id="saveUser" parameterType="com.br.brlog.user.dto.UserDTO">
+	    INSERT INTO brlog.D_USER (
+	        USER_ID, USER_NM, USER_PW, PROVIDER, PROVIDER_ID, PROFILE_IMG_URL, USER_LEVEL, ENABLED_YN, VERIFIED_YN
+	    ) VALUES (
+	        #{userId}, #{userNm}, #{userPw}, #{provider}, #{providerId}, #{profileImgUrl}, #{userLevel}, #{enabledYn}, #{verifiedYn}
+	    )
+	</insert>
+	
+	<update id="updateUser" parameterType="com.br.brlog.user.dto.UserDTO">
+	    UPDATE brlog.D_USER 
+	    SET USER_NM = #{userNm},
+	        PROVIDER = #{provider},
+	        PROVIDER_ID = #{providerId},
+	        PROFILE_IMG_URL = #{profileImgUrl}
+	    WHERE USER_ID = #{userId}
+	</update>
+	
+	<select id="findByProviderAndProviderId" resultType="com.br.brlog.user.dto.UserDTO">
+	    SELECT 
+			USER_ID AS userId
+			, USER_NM AS userNm
+			, USER_PW As userPw
+			, PROFILE_IMG_URL AS profileImgUrl
+			, BIO AS bio
+			, PROVIDER AS provider
+			, PROVIDER_ID AS providerId
+			, USER_LEVEL AS userLevel
+			, ENABLED_YN AS enabledYn
+			, VERIFIED_YN AS verifiedYn
+			, REG_DT as regDt
+			, MOD_DT AS modDt
+			, LAST_LOGIN_DT AS lastLoginDt
+			, LAST_LOGIN_IP AS lastLoginIp
+		FROM brlog.D_USER 
+	    WHERE 1=1
+	    	AND PROVIDER = #{provider} 
+	    	AND PROVIDER_ID = #{providerId}
+	</select>
+	
+</mapper>
+
+
