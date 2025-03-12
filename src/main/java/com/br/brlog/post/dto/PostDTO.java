@@ -18,7 +18,7 @@ public class PostDTO {
     private int viewCnt;
     private int likeCnt;
     private int commentCnt;
-    private boolean isNotice; //
+    private boolean isNotice;
     private String status;
     private String regDt;
     private String modDt;
