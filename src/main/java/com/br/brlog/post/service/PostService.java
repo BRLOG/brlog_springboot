@@ -139,6 +139,14 @@ public class PostService {
     }
     
     /**
+     * 댓글 삭제
+     */
+    public void deleteComment(Long commentId, Long postId) {
+    	postDAO.deleteComment(commentId);
+        postDAO.decreaseCommentCount(postId);
+	}
+    
+    /**
      * 카테고리 목록 조회
      */
     public List<CategoryDTO> getCategories() {
@@ -171,5 +179,12 @@ public class PostService {
      */
     public UserDTO getAuthor(String userId) {
         return postDAO.getAuthor(userId);
+    }
+    
+    /**
+     * 게시글 좋아요 상태 확인
+     */
+    public boolean checkLikeStatus(Long postId, String userId) {
+        return postDAO.checkLikeStatus(postId, userId);
     }
 }

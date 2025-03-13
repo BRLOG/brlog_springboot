@@ -18,4 +18,7 @@ public class CommentDTO {
     private String status;
     private String regDt;
     private String modDt;
+    
+    private String userNm;
+    private String profileImgUrl;
 }

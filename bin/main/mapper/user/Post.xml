@@ -23,8 +23,8 @@
         FROM brlog.D_POST post
         	LEFT OUTER JOIN brlog.D_USER user
         	ON post.USER_ID = user.USER_ID
-        WHERE 
-            post.STATUS = 'A'
+        WHERE 1=1
+            AND post.STATUS = 'A'
             <if test="categoryId != null and categoryId != ''">
                 AND post.CATEGORY_ID = #{categoryId}
             </if>
@@ -45,22 +45,27 @@
     <!-- 게시글 상세 조회 -->
     <select id="getPost" resultType="com.br.brlog.post.dto.PostDTO">
         SELECT 
-            POST_ID AS postId,
-            CATEGORY_ID AS categoryId,
-            USER_ID AS userId,
-            TITLE AS title,
-            CONTENT AS content,
-            VIEW_CNT AS viewCnt,
-            LIKE_CNT AS likeCnt,
-            COMMENT_CNT AS commentCnt,
-            IS_NOTICE AS isNotice,
-            STATUS AS status,
-            REG_DT AS regDt,
-            MOD_DT AS modDt
-        FROM brlog.D_POST
-        WHERE 
-            POST_ID = #{postId}
-            AND STATUS = 'A'
+            post.POST_ID AS postId,
+            post.CATEGORY_ID AS categoryId,
+            post.USER_ID AS userId,
+            post.TITLE AS title,
+            post.CONTENT AS content,
+            post.VIEW_CNT AS viewCnt,
+            post.LIKE_CNT AS likeCnt,
+            post.COMMENT_CNT AS commentCnt,
+            post.IS_NOTICE AS isNotice,
+            post.STATUS AS status,
+            post.REG_DT AS regDt,
+            post.MOD_DT AS modDt,
+            
+            user.USER_NM AS userNm,
+            user.PROFILE_IMG_URL AS profileImgUrl
+        FROM brlog.D_POST post
+        	LEFT OUTER JOIN brlog.D_USER user
+        	ON post.USER_ID = user.USER_ID
+        WHERE 1=1
+            AND post.POST_ID = #{postId}
+            AND post.STATUS = 'A'
     </select>
     
     <!-- 게시글 저장 -->
@@ -96,8 +101,8 @@
             TITLE = #{title},
             CONTENT = #{content},
             MOD_DT = CURRENT_TIMESTAMP
-        WHERE 
-            POST_ID = #{postId}
+        WHERE 1=1
+            AND POST_ID = #{postId}
     </update>
     
     <!-- 게시글 삭제 (상태 변경) -->
@@ -106,8 +111,8 @@
         SET 
             STATUS = 'D',
             MOD_DT = CURRENT_TIMESTAMP
-        WHERE 
-            POST_ID = #{postId}
+        WHERE 1=1
+            AND POST_ID = #{postId}
     </update>
     
     <!-- 게시글 조회수 증가 -->
@@ -116,8 +121,8 @@
         SET 
             VIEW_CNT = VIEW_CNT + 1,
             MOD_DT = CURRENT_TIMESTAMP
-        WHERE 
-            POST_ID = #{postId}
+        WHERE 1=1
+            AND POST_ID = #{postId}
     </update>
     
     <!-- 게시글 좋아요 수 증가 -->
@@ -126,8 +131,8 @@
         SET 
             LIKE_CNT = LIKE_CNT + 1,
             MOD_DT = CURRENT_TIMESTAMP
-        WHERE 
-            POST_ID = #{postId}
+        WHERE 1=1
+            AND POST_ID = #{postId}
     </update>
     
     <!-- 게시글 좋아요 수 감소 -->
@@ -136,8 +141,8 @@
         SET 
             LIKE_CNT = GREATEST(LIKE_CNT - 1, 0),
             MOD_DT = CURRENT_TIMESTAMP
-        WHERE 
-            POST_ID = #{postId}
+        WHERE 1=1
+            AND POST_ID = #{postId}
     </update>
     
     <!-- 게시글 댓글 수 증가 -->
@@ -146,8 +151,18 @@
         SET 
             COMMENT_CNT = COMMENT_CNT + 1,
             MOD_DT = CURRENT_TIMESTAMP
-        WHERE 
-            POST_ID = #{postId}
+        WHERE 1=1
+            AND POST_ID = #{postId}
+    </update>
+    
+    <!-- 게시글 댓글 수 감소 -->
+    <update id="decreaseCommentCount">
+        UPDATE brlog.D_POST
+        SET 
+            COMMENT_CNT = COMMENT_CNT - 1,
+            MOD_DT = CURRENT_TIMESTAMP
+        WHERE 1=1
+            AND POST_ID = #{postId}
     </update>
     
     <!-- 게시글 좋아요 추가 -->
@@ -164,8 +179,8 @@
     <!-- 게시글 좋아요 삭제 -->
     <delete id="removeLike">
         DELETE FROM brlog.D_LIKE
-        WHERE 
-            POST_ID = #{postId}
+        WHERE 1=1
+            AND POST_ID = #{postId}
             AND USER_ID = #{userId}
     </delete>
     
@@ -174,8 +189,8 @@
         SELECT 
             CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END
         FROM brlog.D_LIKE
-        WHERE 
-            POST_ID = #{postId}
+        WHERE 1=1
+            AND POST_ID = #{postId}
             AND USER_ID = #{userId}
     </select>
     
@@ -191,8 +206,8 @@
             REG_DT AS regDt,
             MOD_DT AS modDt
         FROM brlog.D_COMMENT
-        WHERE 
-            POST_ID = #{postId}
+        WHERE 1=1
+            AND POST_ID = #{postId}
             AND STATUS = 'A'
         ORDER BY 
             CASE WHEN PARENT_ID IS NULL THEN COMMENT_ID ELSE PARENT_ID END,
@@ -203,22 +218,27 @@
     <!-- 댓글 목록 페이징 조회 -->
     <select id="getCommentsWithPagination" resultType="com.br.brlog.post.dto.CommentDTO">
         SELECT 
-            COMMENT_ID AS commentId,
-            POST_ID AS postId,
-            USER_ID AS userId,
-            PARENT_ID AS parentId,
-            CONTENT AS content,
-            STATUS AS status,
-            REG_DT AS regDt,
-            MOD_DT AS modDt
-        FROM brlog.D_COMMENT
-        WHERE 
-            POST_ID = #{postId}
-            AND STATUS = 'A'
+            comment.COMMENT_ID AS commentId,
+            comment.POST_ID AS postId,
+            comment.USER_ID AS userId,
+            comment.PARENT_ID AS parentId,
+            comment.CONTENT AS content,
+            comment.STATUS AS status,
+            comment.REG_DT AS regDt,
+            comment.MOD_DT AS modDt,
+            
+            user.USER_NM AS userNm,
+            user.PROFILE_IMG_URL AS profileImgUrl
+        FROM brlog.D_COMMENT comment
+        	LEFT OUTER JOIN brlog.D_USER user
+        	ON comment.USER_ID = user.USER_ID
+        WHERE 1=1
+            AND comment.POST_ID = #{postId}
+            AND comment.STATUS = 'A'
         ORDER BY 
-            CASE WHEN PARENT_ID IS NULL THEN COMMENT_ID ELSE PARENT_ID END,
-            CASE WHEN PARENT_ID IS NULL THEN 0 ELSE 1 END,
-            REG_DT
+            CASE WHEN comment.PARENT_ID IS NULL THEN comment.COMMENT_ID ELSE comment.PARENT_ID END,
+            CASE WHEN comment.PARENT_ID IS NULL THEN 0 ELSE 1 END,
+            comment.REG_DT
         LIMIT #{offset}, #{size}
     </select>
     
@@ -239,6 +259,12 @@
         )
     </insert>
     
+    <delete id="deleteComment">
+    	DELETE FROM brlog.D_COMMENT
+        WHERE 1=1
+            AND COMMENT_ID = #{commentId}
+    </delete>
+    
     <!-- 댓글 조회 -->
     <select id="getComment" resultType="com.br.brlog.post.dto.CommentDTO">
         SELECT 
@@ -251,8 +277,8 @@
             REG_DT AS regDt,
             MOD_DT AS modDt
         FROM brlog.D_COMMENT
-        WHERE 
-            COMMENT_ID = #{commentId}
+        WHERE 1=1
+            AND COMMENT_ID = #{commentId}
     </select>
     
     <!-- 카테고리 목록 조회 -->
@@ -302,8 +328,8 @@
             REG_DT AS regDt,
             MOD_DT AS modDt
         FROM brlog.D_POST
-        WHERE 
-            STATUS = 'A'
+        WHERE 1=1
+            AND STATUS = 'A'
             AND (
                 TITLE LIKE CONCAT('%', #{keyword}, '%')
                 OR CONTENT LIKE CONCAT('%', #{keyword}, '%')
@@ -320,8 +346,16 @@
             USER_NM AS userNm,
             PROFILE_IMG_URL AS profileImgUrl
         FROM brlog.D_USER
-        WHERE 
-            USER_ID = #{userId}
+        WHERE 1=1
+            AND USER_ID = #{userId}
     </select>
+    
+    <!-- 좋아요 상태 확인 -->
+	<select id="checkLikeStatus" parameterType="map" resultType="int">
+	    SELECT COUNT(*)
+	    FROM brlog.D_LIKE
+	    WHERE POST_ID = #{postId}
+	    AND USER_ID = #{userId}
+	</select>
     
 </mapper>

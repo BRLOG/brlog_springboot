@@ -87,7 +87,14 @@ public class PostDAO {
     public void incrementCommentCount(Long postId) {
         sqlSession.update("post.incrementCommentCount", postId);
     }
-
+    
+    /**
+     * 게시글 댓글 수 감소
+     */
+    public void decreaseCommentCount(Long postId) {
+        sqlSession.update("post.decreaseCommentCount", postId);
+    }
+    
     /**
      * 게시글 좋아요 추가
      */
@@ -149,6 +156,13 @@ public class PostDAO {
     public CommentDTO getComment(Long commentId) {
         return sqlSession.selectOne("post.getComment", commentId);
     }
+    
+    /**
+     * 댓글 삭제
+     */
+    public void deleteComment(Long commentId) {
+    	sqlSession.delete("post.deleteComment", commentId);
+	}
 
     /**
      * 카테고리 목록 조회
@@ -180,5 +194,17 @@ public class PostDAO {
      */
     public UserDTO getAuthor(String userId) {
         return sqlSession.selectOne("post.getAuthor", userId);
+    }
+    
+    /**
+     * 게시글 좋아요 상태 확인
+     */
+    public boolean checkLikeStatus(Long postId, String userId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("postId", postId);
+        params.put("userId", userId);
+        
+        Integer count = sqlSession.selectOne("post.checkLikeStatus", params);
+        return count != null && count > 0;
     }
 }

@@ -19,6 +19,11 @@ configurations {
 	}
 }
 
+compileJava {
+    options.compilerArgs += ['-parameters']
+    options.encoding = 'UTF-8'
+}
+
 repositories {
 	mavenCentral()
 }

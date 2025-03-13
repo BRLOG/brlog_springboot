@@ -54,7 +54,7 @@ public class PostController {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     @GetMapping("/{postId}")
-    public ResponseEntity<ResponseDTO<PostDTO>> getPost(@PathVariable Long postId) throws Exception {
+    public ResponseEntity<ResponseDTO<PostDTO>> getPost(@PathVariable(name = "postId") Long postId) throws Exception {
         ResponseDTO responseDTO = ResponseDTO.from(postService.getPost(postId));
         return ResponseEntity.ok(responseDTO);
     }
@@ -75,7 +75,7 @@ public class PostController {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @PutMapping("/{postId}")
     public ResponseEntity<ResponseDTO<PostDTO>> updatePost(
-            @PathVariable Long postId, 
+            @PathVariable(name = "postId") Long postId, 
             @RequestBody PostDTO post) throws Exception {
         post.setPostId(postId);
         ResponseDTO responseDTO = ResponseDTO.from(postService.updatePost(post));
@@ -87,7 +87,7 @@ public class PostController {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     @DeleteMapping("/{postId}")
-    public ResponseEntity<ResponseDTO<Void>> deletePost(@PathVariable Long postId) throws Exception {
+    public ResponseEntity<ResponseDTO<Void>> deletePost(@PathVariable(name = "postId") Long postId) throws Exception {
         postService.deletePost(postId);
         ResponseDTO responseDTO = ResponseDTO.from(null);
         return ResponseEntity.ok(responseDTO);
@@ -99,8 +99,8 @@ public class PostController {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @PostMapping("/{postId}/like")
     public ResponseEntity<ResponseDTO<Boolean>> addLike(
-            @PathVariable Long postId,
-            @RequestParam String userId) throws Exception {
+    		@PathVariable(name = "postId") Long postId,
+    		@RequestParam(name = "userId") String userId) throws Exception {
         
         boolean result = postService.addLike(postId, userId);
         ResponseDTO responseDTO = ResponseDTO.from(result);
@@ -113,8 +113,8 @@ public class PostController {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @DeleteMapping("/{postId}/like")
     public ResponseEntity<ResponseDTO<Boolean>> removeLike(
-            @PathVariable Long postId,
-            @RequestParam String userId) throws Exception {
+    		@PathVariable(name = "postId") Long postId,
+    		@RequestParam(name = "userId") String userId) throws Exception {
         
         boolean result = postService.removeLike(postId, userId);
         ResponseDTO responseDTO = ResponseDTO.from(result);
@@ -127,9 +127,9 @@ public class PostController {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @GetMapping("/{postId}/comments")
     public ResponseEntity<ResponseDTO<List<CommentDTO>>> getComments(
-            @PathVariable Long postId,
-            @RequestParam(defaultValue = "0") int offset,
-            @RequestParam(defaultValue = "10") int size) throws Exception {
+    		@PathVariable(name = "postId") Long postId,
+            @RequestParam(defaultValue = "0", name="offset") int offset,
+            @RequestParam(defaultValue = "10", name="size") int size) throws Exception {
         
         ResponseDTO responseDTO = ResponseDTO.from(
                 postService.getCommentsWithPagination(postId, offset, size));
@@ -141,14 +141,28 @@ public class PostController {
      * 댓글 저장
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    @PostMapping("/{postId}/comments")
+    @PostMapping("/{postId}/comment")
     public ResponseEntity<ResponseDTO<CommentDTO>> saveComment(
-            @PathVariable Long postId,
+    		@PathVariable(name = "postId") Long postId,
             @RequestBody CommentDTO comment) throws Exception {
         
         comment.setPostId(postId);
         ResponseDTO responseDTO = ResponseDTO.from(postService.saveComment(comment));
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+    }
+    
+    /**
+     * 댓글 삭제
+     */
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    @DeleteMapping("/{commentId}/comment")
+    public ResponseEntity<ResponseDTO<CommentDTO>> removeComment(
+    		@PathVariable(name = "commentId") Long commentId,
+    		@RequestParam(name = "postId") Long postId) {
+    	
+    	postService.deleteComment(commentId, postId);
+    	ResponseDTO responseDTO = ResponseDTO.from(null);
+        return ResponseEntity.ok(responseDTO);
     }
     
     /**
@@ -184,6 +198,21 @@ public class PostController {
         ResponseDTO responseDTO = ResponseDTO.from(
                 postService.searchPosts(keyword, offset, size));
         
+        return ResponseEntity.ok(responseDTO);
+    }
+    
+    /**
+     * 게시글 좋아요 상태 확인
+     */
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    @GetMapping("/{postId}/like/check")
+    public ResponseEntity<ResponseDTO<Map<String, Boolean>>> checkLikeStatus(
+            @PathVariable(name = "postId") Long postId,
+            @RequestParam(name = "userId") String userId) throws Exception {
+        
+        boolean isLiked = postService.checkLikeStatus(postId, userId);
+        Map<String, Boolean> result = Map.of("liked", isLiked);
+        ResponseDTO responseDTO = ResponseDTO.from(result);
         return ResponseEntity.ok(responseDTO);
     }
 }
