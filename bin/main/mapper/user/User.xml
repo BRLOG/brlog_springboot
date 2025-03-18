@@ -72,6 +72,27 @@
 	    	AND PROVIDER_ID = #{providerId}
 	</select>
 	
+	<!-- 프로필 정보 업데이트 -->
+	<update id="updateUserProfile" parameterType="com.br.brlog.user.dto.UserDTO">
+		UPDATE brlog.D_USER
+		SET 
+			USER_NM = #{userNm},
+			PROFILE_IMG_URL = #{profileImgUrl},
+			BIO = #{bio},
+			MOD_DT = CURRENT_TIMESTAMP()
+		WHERE 1=1
+			AND USER_ID = #{userId}
+	</update>
+	
+	<!-- 비밀번호 업데이트 -->
+	<update id="updateUserPassword" parameterType="com.br.brlog.user.dto.UserDTO">
+		UPDATE brlog.D_USER
+		SET 
+			USER_PW = #{userPw},
+			MOD_DT = CURRENT_TIMESTAMP()
+		WHERE 1=1
+			AND USER_ID = #{userId}
+	</update>
 </mapper>
 
 

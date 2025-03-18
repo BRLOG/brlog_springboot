@@ -67,4 +67,20 @@ public class UserDAO {
         params.put("roles", roles);
         sqlSession.insert("user.saveRoles", params);
     }
+    
+    /**
+     * 사용자 프로필 정보 업데이트
+     */
+    public void updateUserProfile(UserDTO userDTO) {
+        //log.debug("updateUserProfile: {}", userDTO);
+        sqlSession.update("user.updateUserProfile", userDTO);
+    }
+    
+    /**
+     * 사용자 비밀번호 업데이트
+     */
+    public void updateUserPassword(UserDTO userDTO) {
+        //log.debug("updateUserPassword: userId={}", userDTO.getUserId());
+        sqlSession.update("user.updateUserPassword", userDTO);
+    }
 }

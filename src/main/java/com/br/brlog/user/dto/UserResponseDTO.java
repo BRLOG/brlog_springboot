@@ -12,4 +12,5 @@ public class UserResponseDTO {
     private String userId;
     private String userNm;
     private String profileImgUrl;
+    private String provider;
 }

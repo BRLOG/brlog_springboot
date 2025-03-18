@@ -41,6 +41,7 @@ public class UserDTO {
                 .userId(userDTO.getUserId())
                 .userNm(userDTO.getUserNm())
                 .profileImgUrl(userDTO.getProfileImgUrl())
+                .provider(userDTO.getProvider())
                 .build();
     }
 }

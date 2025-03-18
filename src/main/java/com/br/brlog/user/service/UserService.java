@@ -260,4 +260,81 @@ public class UserService {
         
         return userDTO;
     }
+    
+    /**
+     * 사용자 프로필 정보 조회
+     */
+    public UserDTO getUserProfile(String userId) {
+        log.info("사용자 프로필 정보 조회: {}", userId);
+        
+        UserDTO userDTO = userDAO.findByUserId(userId);
+        if (userDTO == null) {
+            throw new RuntimeException("사용자를 찾을 수 없습니다");
+        }
+        
+        // 비밀번호는 API 응답에서 제외
+        userDTO.setUserPw(null);
+        
+        return userDTO;
+    }
+    
+    /**
+     * 사용자 프로필 정보 업데이트
+     */
+    public UserDTO updateUserProfile(UserDTO userProfileDTO) {
+        log.info("사용자 프로필 정보 업데이트: {}", userProfileDTO.getUserId());
+        
+        // 기존 사용자 정보 확인
+        UserDTO existingUser = userDAO.findByUserId(userProfileDTO.getUserId());
+        if (existingUser == null) {
+            throw new RuntimeException("사용자를 찾을 수 없습니다");
+        }
+        
+        // 변경 가능한 필드만 업데이트
+        existingUser.setUserNm(userProfileDTO.getUserNm());
+        existingUser.setProfileImgUrl(userProfileDTO.getProfileImgUrl());
+        existingUser.setBio(userProfileDTO.getBio());
+        
+        // 데이터베이스 업데이트
+        userDAO.updateUserProfile(existingUser);
+        
+        // 업데이트된 사용자 정보 반환
+        UserDTO updatedUser = userDAO.findByUserId(userProfileDTO.getUserId());
+        updatedUser.setUserPw(null); // 비밀번호는 응답에서 제외
+        
+        return updatedUser;
+    }
+    
+    /**
+     * 사용자 비밀번호 변경
+     */
+    public boolean updatePassword(String userId, String currentPassword, String newPassword) {
+        log.info("사용자 비밀번호 변경: {}", userId);
+        
+        // 기존 사용자 정보 확인
+        UserDTO userDTO = userDAO.findByUserId(userId);
+        if (userDTO == null) {
+            throw new RuntimeException("사용자를 찾을 수 없습니다");
+        }
+        
+        // 현재 비밀번호 확인
+        // 운영 환경에서는 암호화된 비밀번호를 비교해야 함
+        // if (!passwordEncoder.matches(currentPassword, userDTO.getUserPw())) {
+        if (!currentPassword.equals(userDTO.getUserPw())) {
+            log.error("현재 비밀번호가 일치하지 않음: {}", userId);
+            return false;
+        }
+        
+        // 새 비밀번호 암호화 (실제 환경에서 필요)
+        // String encodedPassword = passwordEncoder.encode(newPassword);
+        
+        // 암호화 없이 직접 저장 (기존 코드 패턴에 맞춤)
+        userDTO.setUserPw(newPassword);
+        
+        // 비밀번호 업데이트
+        userDAO.updateUserPassword(userDTO);
+        
+        log.info("비밀번호 변경 성공: {}", userId);
+        return true;
+    }
 }
