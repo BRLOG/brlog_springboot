@@ -1,0 +1,54 @@
+server:
+  port: 8090
+
+spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  datasource:
+    url: jdbc:mysql://brmysql.ctuw4i0m8zm5.ap-northeast-2.rds.amazonaws.com:33066
+    username: admin
+    password: 'brjg123$#'
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 664907543384-j5umt8gdn7c1hva42lobr1ve1lfi1be6.apps.googleusercontent.com
+            client-secret: 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
+            scope: email,profile
+            redirect-uri: "{baseUrl}/oauth2/callback/{registrationId}"
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+      file-size-threshold: 2KB
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: brbrbr0305@gmail.com  
+    password: msauzagiyobhvljp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true    
+
+oauth2:
+  authorizedRedirectUri: http://localhost:5173/oauth2/redirect
+
+cors:
+  allowed-origins: http://localhost:5173
+  allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+  allowed-headers: Authorization,Content-Type,X-Requested-With,Accept,Origin
+  exposed-headers: Authorization
+
+file:
+  upload:
+    dir: D:/WWW/brlog_files
+  access:
+    url: http://localhost:8090/files
