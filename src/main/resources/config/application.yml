@@ -1,7 +1,17 @@
 spring:
   profiles:
     active: dev  # 기본 프로필 설정
-
+  graphql:
+    graphiql:
+      enabled: true
+    schema:
+      printer:
+        enabled: true
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration
+      - org.springframework.boot.autoconfigure.graphql.servlet.GraphQlWebMvcAutoConfiguration
+            
 mybatis:
   mapper-locations: classpath:mapper/**/*.xml
   configuration:
