@@ -168,7 +168,7 @@ public class ImageGenerationService {
         if (!uploadDir.exists()) {
             uploadDir.mkdirs();
         }
-        
+         
         // 파일명 생성 및 저장
         String fileName = UUID.randomUUID().toString() + ".png";
         String filePath = uploadPath + File.separator + fileName;
