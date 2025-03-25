@@ -28,7 +28,11 @@ public enum ResponseCode {
 	// 사용자 관련 에러
     ERROR_USER_NOT_FOUND(false, "U001", "사용자를 찾을 수 없습니다"),
     ERROR_DUPLICATE_USER(false, "U002", "이미 존재하는 사용자입니다"),
-    ERROR_INVALID_PASSWORD(false, "U003", "비밀번호가 일치하지 않습니다");
+    ERROR_INVALID_PASSWORD(false, "U003", "비밀번호가 일치하지 않습니다"),
+	
+	// 이미지 관련
+	ERROR_IMAGE_EXPLAIN(false, "I001", "이미지 설명을 입력해주세요."),
+	ERROR_IMAGE_GENERATE(false, "I002", "이미지 생성 중 오류가 발생했습니다.");
 
     private final boolean result;
     private final String code;

@@ -13,9 +13,10 @@ target/
 .springBeans
 .sts4-cache
 .metadata/
-/src/main/resources/application.yml
-/src/main/resources/application-dev.yml
-/src/main/resources/application-prod.yml
+**/application.yml
+**/application-dev.yml
+**/application-sample.yml
+bin/
 
 ### IntelliJ IDEA ###
 .idea

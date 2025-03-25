@@ -85,6 +85,7 @@ public class SecurityConfig {
                 .requestMatchers("/public/**").permitAll()
                 //.requestMatchers(HttpMethod.GET, "/post/**").permitAll()
                 .requestMatchers("/lab/**").permitAll()
+                .requestMatchers("/lab/ai/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/**").permitAll()
                 
                 // 인증 필요

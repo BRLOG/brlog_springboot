@@ -67,6 +67,9 @@ dependencies {
     //implementation 'org.springframework.boot:spring-boot-starter-graphql:3.1.0'
     implementation 'com.graphql-java:graphql-java:20.0'
     
+    //google cloud (gemini)
+    implementation 'com.google.cloud:google-cloud-aiplatform:3.4.0'
+    
     // 테스트
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.4'
