@@ -1,0 +1,186 @@
+################### application.yml ###################
+#
+#spring:
+#  profiles:
+#    active: dev  # 기본 프로필 설정
+#  graphql:
+#    graphiql:
+#      enabled: true
+#    schema:
+#      printer:
+#        enabled: true
+#  autoconfigure:
+#    exclude:
+#      - org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration
+#      - org.springframework.boot.autoconfigure.graphql.servlet.GraphQlWebMvcAutoConfiguration
+#            
+#mybatis:
+#  mapper-locations: classpath:mapper/**/*.xml
+#  configuration:
+#    map-underscore-to-camel-case: true
+#
+#jwt:
+#  secret: zaSO02h44LV/fZ7/OvdLXjKYOmdkEt3g0C3sQJdL0qxJHo7UyWOCNtlRy+UBfmDCNw7JyuMoB8j+WxA9g80FLA==
+#  expiration: 86400000
+#  header: Authorization
+#  prefix: Bearer
+#
+#server:
+#  forward-headers-strategy: native
+#  tomcat:
+#    remote-ip-header: X-Forwarded-For
+#    protocol-header: X-Forwarded-Proto
+#
+## 토스페이먼츠 설정
+#toss:
+#  payments:
+#    # 테스트 모드 키
+#    client-key: ####
+#    secret-key: ####
+#    success-url: https://brlog.site/lab/payment/success
+#    fail-url: https://brlog.site/lab/payment/fail
+#    
+## google gemini
+#gemini:
+#  api:
+#    key: ####
+#    url: https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent
+#
+## Stability AI API 이미지 생성
+#stability:
+#  api:
+#    key: ${STABILITY_API_KEY}
+#    url: https://api.stability.ai
+#
+#logging:
+#  level:
+#    org.mybatis: DEBUG
+#    com.br.brlog: DEBUG
+#    
+#    
+#################### application-dev.yml ###################
+#
+#server:
+#  port: 8090
+#
+#spring:
+#  data:
+#    redis:
+#      host: localhost
+#      port: 6379
+#  datasource:
+#    url: ####
+#    username: ####
+#    password: ####
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+#          google:
+#            client-id: ####
+#            client-secret: ####
+#            scope: email,profile
+#            redirect-uri: "{baseUrl}/oauth2/callback/{registrationId}"
+#  servlet:
+#    multipart:
+#      enabled: true
+#      max-file-size: 10MB
+#      max-request-size: 10MB
+#      file-size-threshold: 2KB
+#  mail:
+#    host: smtp.gmail.com
+#    port: 587
+#    username: ####  
+#    password: ####
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true    
+#
+#toss:
+#  payments:
+#    success-url: http://localhost:5173/lab/payment/success
+#    fail-url: http://localhost:5173/lab/payment/fail
+#    
+#oauth2:
+#  authorizedRedirectUri: http://localhost:5173/oauth2/redirect
+#
+#cors:
+#  allowed-origins: http://localhost:5173
+#  allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+#  allowed-headers: Authorization,Content-Type,X-Requested-With,Accept,Origin
+#  exposed-headers: Authorization
+#
+#file:
+#  upload:
+#    dir: D:/WWW/brlog_files
+#  access:
+#    url: http://localhost:8090/files
+#
+#
+#################### application-prod.yml ###################    
+#
+#server:
+#  port: 8090
+#
+#spring:
+#  data:
+#    redis:
+#      host: localhost
+#      port: 6379
+#  datasource:
+#    url: ####
+#    username: ####
+#    password: ####
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+#          google:
+#            client-id: ####
+#            client-secret: ####
+#            scope: email,profile
+#            redirect-uri: "{baseUrl}/oauth2/callback/{registrationId}"
+#  servlet:
+#    multipart:
+#      enabled: true
+#      max-file-size: 10MB
+#      max-request-size: 10MB
+#      file-size-threshold: 2KB
+#  mail:
+#    host: smtp.gmail.com
+#    port: 587
+#    username: ####  
+#    password: ####
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true    
+#
+#oauth2:
+#  authorizedRedirectUri: https://brlog.site/oauth2/redirect
+#
+#cors:
+#  allowed-origins: https://brlog.site
+#  allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+#  allowed-headers: Authorization,Content-Type,X-Requested-With,Accept,Origin
+#  exposed-headers: Authorization
+#
+#file:
+#  upload:
+#    dir: C:/WWW/brlog_files
+#  access:
+#    url: https://brlog.site/files
+#
+#logging:
+#  level:
+#    org.mybatis: INFO
+#    com.br.brlog: INFO
+#    org.springframework: INFO
+#

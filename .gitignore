@@ -15,7 +15,7 @@ target/
 .metadata/
 **/application.yml
 **/application-dev.yml
-**/application-sample.yml
+**/application-prod.yml
 bin/
 
 ### IntelliJ IDEA ###
