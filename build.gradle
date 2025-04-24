@@ -70,6 +70,14 @@ dependencies {
     //google cloud (gemini)
     implementation 'com.google.cloud:google-cloud-aiplatform:3.4.0'
     
+    // Kafka
+    implementation 'org.apache.kafka:kafka-clients:3.4.0' 			// 기본 Kafka 클라이언트
+    implementation 'org.springframework.kafka:spring-kafka'  		// Spring Kafka 지원
+    implementation 'io.projectreactor.kafka:reactor-kafka:1.3.21'	// Reactor Kafka
+    
+    // WebFlux
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    
     // 테스트
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.4'

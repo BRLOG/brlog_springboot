@@ -9,15 +9,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.br.brlog.notification.service.NotificationService;
 import com.br.brlog.post.dao.PostDAO;
 import com.br.brlog.post.dto.CategoryDTO;
 import com.br.brlog.post.dto.CommentDTO;
 import com.br.brlog.post.dto.ContributorDTO;
 import com.br.brlog.post.dto.PostDTO;
 import com.br.brlog.user.dto.UserDTO;
+import com.br.brlog.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Slf4j
 @Service
@@ -25,6 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 public class PostService {
     
     private final PostDAO postDAO;
+    private final NotificationService notificationService;
+    private final UserService userService;
     
     /**
      * 게시글 목록 조회
@@ -133,9 +139,32 @@ public class PostService {
      */
     @Transactional
     public CommentDTO saveComment(CommentDTO comment) {
+    	// 1. 댓글 저장
         postDAO.saveComment(comment);
         postDAO.incrementCommentCount(comment.getPostId());
-        return comment; // insert 후 생성된 ID가 comment 객체에 설정됨
+        
+        // 2. 댓글 알림 처리 - 비동기적으로 처리하여 응답 시간에 영향 없도록 함
+        Mono.fromRunnable(() -> {
+            try {
+                // 게시글 정보 조회
+                PostDTO post = postDAO.getPost(comment.getPostId());
+                
+                // 댓글 작성자 정보 조회
+                UserDTO commenter = userService.findByUserId(comment.getUserId());
+                
+                // 알림 전송
+                notificationService.sendCommentNotification(comment, post, commenter)
+                    .subscribeOn(Schedulers.boundedElastic())
+                    .subscribe(
+                        null,
+                        error -> log.error("Failed to send notification: {}", error.getMessage())
+                    );
+            } catch (Exception e) {
+                log.error("Error processing comment notification", e);
+            }
+        }).subscribeOn(Schedulers.boundedElastic()).subscribe();
+        
+        return comment; // insert 후 생성된 ID
     }
     
     /**

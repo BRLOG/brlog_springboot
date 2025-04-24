@@ -1,5 +1,6 @@
 package com.br.brlog.security;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -86,12 +87,17 @@ public class SecurityConfig {
                 //.requestMatchers(HttpMethod.GET, "/post/**").permitAll()
                 .requestMatchers("/lab/**").permitAll()
                 .requestMatchers("/lab/ai/**").permitAll()
+                .requestMatchers("/notifications/**").permitAll()	 // 알림 관련 모든 엔드포인트 허용 (임시)
                 .requestMatchers(HttpMethod.GET, "/**").permitAll()
+                
+                // 알림 스트림은 인증 필요
+                .requestMatchers("/notifications/stream").authenticated()
                 
                 // 인증 필요
                 .requestMatchers(HttpMethod.POST, "/post/**").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/post/**").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/post/**").authenticated()
+                //.requestMatchers(HttpMethod.POST, "/notifications/**").authenticated()
                 .anyRequest().authenticated()
             )
             .oauth2Login(oauth2 -> oauth2
@@ -123,8 +129,13 @@ public class SecurityConfig {
         List<String> allowedMethodsList = Arrays.asList(allowedMethods.split(","));
         
         // 허용된 헤더에 X-Public-Request 추가
-        String headersWithCustom = allowedHeaders + ",X-Public-Request";
-        List<String> allowedHeadersList = Arrays.asList(headersWithCustom.split(","));
+        List<String> allowedHeadersList = new ArrayList<>(Arrays.asList(allowedHeaders.split(",")));
+        if (!allowedHeadersList.contains("X-Public-Request")) {
+            allowedHeadersList.add("X-Public-Request");
+        }
+        if (!allowedHeadersList.contains("Authorization")) {
+            allowedHeadersList.add("Authorization");
+        }
         
         List<String> exposedHeadersList = Arrays.asList(exposedHeaders.split(","));
         

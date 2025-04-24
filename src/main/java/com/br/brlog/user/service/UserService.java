@@ -337,4 +337,11 @@ public class UserService {
         log.info("비밀번호 변경 성공: {}", userId);
         return true;
     }
+
+    /*
+     * 사용자 정보 조회
+     */
+	public UserDTO findByUserId(String userId) {
+		return userDAO.findByUserId(userId);
+	}
 }
